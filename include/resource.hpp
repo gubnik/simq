@@ -2,10 +2,6 @@
 
 #include "request.hpp"
 #include "worker.hpp"
-#include <cstddef>
-#include <deque>
-#include <functional>
-#include <memory>
 #include <queue>
 namespace simq
 {
@@ -14,7 +10,7 @@ class Resource
   public:
     Resource(Worker, std::size_t);
 
-    bool process(const std::unique_ptr<Request> &);
+    bool process(const Request &);
 
   private:
     Worker m_Worker;

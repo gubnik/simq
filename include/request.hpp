@@ -1,8 +1,6 @@
 #pragma once
 
-#include "state.hpp"
 #include "worker.hpp"
-#include <memory>
 
 namespace simq
 {
@@ -10,18 +8,27 @@ namespace simq
 class Request
 {
   public:
-    Request(double);
+    enum class Type
+    {
+        First = 0,
+        Second,
+        Any
+    };
+
+  public:
+    Request(Type, double);
     double timestamp() const noexcept;
 
   public:
-    static std::unique_ptr<Request> random(double);
+    static Request random(double);
+    static double exp_distr(double);
 
   public:
-    virtual State handle_event(State);
-    virtual double time_distribution() const noexcept     = 0;
-    virtual double processing_time(Worker) const noexcept = 0;
+    double time_distribution() const noexcept;
+    double processing_time(Worker) const noexcept;
 
   protected:
+    Type m_Type;
     double m_TimeStamp;
 };
 
