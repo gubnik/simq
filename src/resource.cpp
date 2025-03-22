@@ -2,7 +2,6 @@
 #include "logger.hpp"
 #include "request.hpp"
 #include "worker.hpp"
-#include <iostream>
 
 simq::Resource::Resource (simq::Worker worker, std::size_t max_size)
     : m_Worker(worker), m_MaxCapacity(max_size)
@@ -25,8 +24,8 @@ bool simq::Resource::process (const Request &req)
     }
     if (m_TimeStamps.size() >= m_MaxCapacity)
     {
-        std::cout << "Nigger\n";
-        logger.log("Blocked request at ", req.timestamp());
+        logger.log("Blocked request for resource of type ",
+                   static_cast<int>(m_Worker), " at ", req.timestamp());
         return false;
     }
     logger.log("Seized resource of type ", static_cast<int>(m_Worker), " at ",
