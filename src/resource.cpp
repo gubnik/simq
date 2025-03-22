@@ -8,6 +8,17 @@ simq::Resource::Resource (simq::Worker worker, std::size_t max_size)
 {
 }
 
+void simq::Resource::release (double timestamp)
+{
+    const auto &logger = Logger::global();
+    while (m_TimeStamps.size() && m_TimeStamps.top() <= timestamp)
+    {
+        logger.log("Freed resource of type ", static_cast<int>(m_Worker),
+                   " due to be processed at ", m_TimeStamps.top());
+        m_TimeStamps.pop();
+    }
+}
+
 bool simq::Resource::process (const Request &req)
 {
     const double processed_timestamp = req.processing_time(m_Worker);
@@ -16,12 +27,6 @@ bool simq::Resource::process (const Request &req)
         return false;
     }
     const auto &logger = Logger::global();
-    while (m_TimeStamps.size() && m_TimeStamps.top() <= req.timestamp())
-    {
-        logger.log("Freed resource of type ", static_cast<int>(m_Worker),
-                   " due to be processed at ", m_TimeStamps.top());
-        m_TimeStamps.pop();
-    }
     if (m_TimeStamps.size() >= m_MaxCapacity)
     {
         logger.log("Blocked request for resource of type ",

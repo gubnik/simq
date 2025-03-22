@@ -11,6 +11,7 @@ class RequestQueue
   public:
     RequestQueue(std::size_t, std::size_t);
 
+    void release(double);
     bool process(const Request &);
 
   private:

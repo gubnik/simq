@@ -10,6 +10,7 @@ class Resource
   public:
     Resource(Worker, std::size_t);
 
+    void release(double);
     bool process(const Request &);
 
   private:

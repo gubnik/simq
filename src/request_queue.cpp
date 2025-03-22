@@ -8,8 +8,15 @@ simq::RequestQueue::RequestQueue (std::size_t first_max, std::size_t second_max)
 {
 }
 
+void simq::RequestQueue::release (double timestamp)
+{
+    m_First.release(timestamp);
+    m_Second.release(timestamp);
+}
+
 bool simq::RequestQueue::process (const simq::Request &req)
 {
+    release(req.timestamp());
     const bool firstQueueReply  = m_First.process(req);
     const bool secondQueueReply = m_Second.process(req);
     if (firstQueueReply)
