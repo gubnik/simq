@@ -12,12 +12,6 @@ simq::Resource::Resource (SmallLogger &&logger, std::size_t id,
 simq::Resource::~Resource () noexcept
 {
     m_HandlerThread.join();
-    while (!m_Waiting.empty())
-    {
-        auto &&ref = m_Waiting.front();
-        m_Logger.log_terminate(ref.type(), m_Id);
-        m_Waiting.pop();
-    }
 }
 
 void simq::Resource::request_handler () noexcept
@@ -44,6 +38,11 @@ void simq::Resource::request_handler () noexcept
         release(req.timestamp());
         process(std::move(req));
     }
+    while (!m_Waiting.empty())
+    {
+        m_Logger.log_terminate(m_Waiting.front().type(), m_Id);
+        m_Waiting.pop();
+    }
 }
 
 void simq::Resource::release (TimeUnit timestamp) noexcept
@@ -57,13 +56,11 @@ void simq::Resource::release (TimeUnit timestamp) noexcept
 
 void simq::Resource::process (simq::Request &&req) noexcept
 {
-    m_Waiting.push(std::move(req));
-    if (m_TimeStamps.size() >= m_MaxCapacity - 1)
+    if (m_TimeStamps.size() >= m_MaxCapacity)
     {
+        m_Waiting.push(std::move(req));
         return;
     }
-    auto &&treq = m_Waiting.front();
-    m_Waiting.pop();
-    m_Logger.log_seize(treq.timestamp(), treq.type(), m_Id);
-    m_TimeStamps.push(treq.processing_time(m_Id));
+    m_Logger.log_seize(req.timestamp(), req.type(), m_Id);
+    m_TimeStamps.push(req.processing_time(m_Id));
 }

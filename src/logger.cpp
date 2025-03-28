@@ -2,6 +2,7 @@
 #include "constants.hpp"
 #include <algorithm>
 #include <cstring>
+#include <execution>
 #include <iostream>
 #include <ostream>
 #include <utility>
@@ -13,7 +14,7 @@ simq::Logger::Logger (std::ostream &p_OutStream) : m_OutStream(p_OutStream)
 
 simq::Logger::~Logger ()
 {
-    std::sort(m_Events.begin(), m_Events.end(),
+    std::sort(std::execution::par_unseq, m_Events.begin(), m_Events.end(),
               [] (const Entry &it1, const Entry &it2)
               { return it1.first < it2.first; });
     for (const auto &it : m_Events)

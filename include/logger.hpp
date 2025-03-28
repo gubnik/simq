@@ -14,7 +14,7 @@ concept IsStringConvertible = requires(T obj, std::ostream out) {
     { out << obj } -> std::convertible_to<std::ostream &>;
 };
 
-using MessageType = std::array<char, 48>;
+using MessageType = std::array<char, 64>;
 class SmallLogger;
 
 class Logger

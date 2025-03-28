@@ -2,7 +2,7 @@
 #include "logger.hpp"
 #include <cstdio>
 
-#define DOSPEED
+// #define DOSPEED
 
 simq::SmallLogger::SmallLogger (simq::Logger &logger) : m_Logger(logger)
 {
@@ -30,11 +30,10 @@ void simq::SmallLogger::log_seize (TimeUnit stamp, std::size_t req,
 {
     MessageType msg;
 #ifdef DOSPEED
-    std::snprintf(msg.data(), msg.size(), "[SEIZE] REQUEST %lu RESOURCE %lu\n",
-                  req, res);
+    std::snprintf(msg.data(), msg.size(), "[SZE] RES %lu REQ %lu\n", res, req);
 #else
-    std::snprintf(msg.data(), msg.size(),
-                  "%.8lf [SEIZE] REQUEST %lu RESOURCE %lu\n", stamp, req, res);
+    std::snprintf(msg.data(), msg.size(), "%8.4e [SZE] RES %lu REQ %lu\n",
+                  stamp, req, res);
 #endif
     log(stamp, msg);
 }
@@ -43,10 +42,9 @@ void simq::SmallLogger::log_release (TimeUnit stamp, std::size_t res) noexcept
 {
     MessageType msg;
 #ifdef DOSPEED
-    std::snprintf(msg.data(), msg.size(), "[RELEASE] RESOURCE %lu\n", res);
+    std::snprintf(msg.data(), msg.size(), "[RLS] RES %lu\n", res);
 #else
-    std::snprintf(msg.data(), msg.size(), "%.8lf [RELEASE] RESOURCE %lu\n",
-                  stamp, res);
+    std::snprintf(msg.data(), msg.size(), "%8.4e [RLS] RES %lu\n", stamp, res);
 #endif
     log(stamp, msg);
 }
@@ -56,11 +54,10 @@ void simq::SmallLogger::log_terminate (std::size_t req,
 {
     MessageType msg;
 #ifdef DOSPEED
-    std::snprintf(msg.data(), msg.size(),
-                  "[TERMINATE] REQUEST %lu RESOURCE %lu\n", req, res);
+    std::snprintf(msg.data(), msg.size(), "[TRM] RES %lu REQ %lu\n", res, req);
 #else
     std::snprintf(msg.data(), msg.size(),
-                  "[TERMINATE] REQUEST %lu RESOURCE %lu\n", req, res);
+                  "__OVERTIME__ [TRM] RES %lu REQ %lu\n", res, req);
 #endif
     log(constants::MaxTime, msg);
 }
