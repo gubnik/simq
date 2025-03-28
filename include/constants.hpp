@@ -23,7 +23,7 @@ constexpr TimeUnit B3 = 5;
 constexpr std::size_t RequestTypes  = 3;
 constexpr std::size_t ResourceTypes = 2;
 
-constexpr std::array<TimeUnit, RequestTypes> interval_times_table = {
+constexpr std::array<TimeUnit, RequestTypes> distribution_times_table = {
     {R1, G1, B1}};
 
 constexpr std::array<std::array<TimeUnit, ResourceTypes>, RequestTypes>
@@ -48,7 +48,7 @@ template <std::size_t request> consteval TimeUnit interval_time ()
 {
     constexpr std::size_t coeff = time_coeff<request>();
     static_assert(coeff != 0, "Index out of bounds");
-    return interval_times_table[request] * coeff;
+    return distribution_times_table[request] * coeff;
 }
 
 template <std::size_t... Requests>

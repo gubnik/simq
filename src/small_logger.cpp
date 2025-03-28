@@ -33,7 +33,7 @@ void simq::SmallLogger::log_seize (TimeUnit stamp, std::size_t req,
     std::snprintf(msg.data(), msg.size(), "[SZE] RES %lu REQ %lu\n", res, req);
 #else
     std::snprintf(msg.data(), msg.size(), "%8.4e [SZE] RES %lu REQ %lu\n",
-                  stamp, req, res);
+                  stamp, res, req);
 #endif
     log(stamp, msg);
 }
