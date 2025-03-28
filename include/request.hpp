@@ -1,6 +1,7 @@
 #pragma once
 
-#include "worker.hpp"
+#include "core.hpp"
+#include <queue>
 
 namespace simq
 {
@@ -8,28 +9,33 @@ namespace simq
 class Request
 {
   public:
-    enum class Type
-    {
-        First = 0,
-        Second,
-        Any
-    };
+    Request(std::size_t, TimeUnit) noexcept;
+    Request(Request &&) noexcept;
 
   public:
-    Request(Type, double);
-    double timestamp() const noexcept;
+    Request &operator=(Request &&) noexcept;
 
   public:
-    static Request random(double);
-    static double exp_distr(double);
+    TimeUnit timestamp() const noexcept;
+    std::size_t type() const noexcept;
+    static bool accepted(std::size_t, std::size_t) noexcept;
+    bool accepted(std::size_t) const noexcept;
+    TimeUnit interval_time() const noexcept;
+    TimeUnit processing_time(std::size_t) const noexcept;
 
-  public:
-    double time_distribution() const noexcept;
-    double processing_time(Worker) const noexcept;
-
-  protected:
-    Type m_Type;
-    double m_TimeStamp;
+  private:
+    std::size_t m_Type;
+    TimeUnit m_TimeStamp;
 };
 
+struct RequestComparator
+{
+    bool operator()(const Request &req1, const Request &req2)
+    {
+        return req1.timestamp() > req2.timestamp();
+    }
+};
+
+using QueueType =
+    std::priority_queue<Request, std::vector<Request>, RequestComparator>;
 } // namespace simq

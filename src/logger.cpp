@@ -1,45 +1,37 @@
 #include "logger.hpp"
+#include "constants.hpp"
+#include <algorithm>
+#include <cstring>
 #include <iostream>
-#include <mutex>
 #include <ostream>
+#include <utility>
 
-simq::Logger::Logger (std::ostream &p_OutStream)
-    : m_Thread(&Logger::process_queue, this), m_StopLoggingFlag(false),
-      m_OutStream(p_OutStream)
+simq::Logger::Logger (std::ostream &p_OutStream) : m_OutStream(p_OutStream)
 {
+    m_Events.reserve(constants::MaxTime);
 }
 
 simq::Logger::~Logger ()
 {
-    m_StopLoggingFlag = true;
-    m_Condition.notify_all();
+    std::sort(m_Events.begin(), m_Events.end(),
+              [] (const Entry &it1, const Entry &it2)
+              { return it1.first < it2.first; });
+    for (const auto &it : m_Events)
     {
-        m_Thread.join();
+        m_OutStream.write(it.second.data(), std::strlen(it.second.data()));
     }
 }
 
-void simq::Logger::process_queue ()
+void simq::Logger::append (const SmallLogger &logger)
 {
-    while (true)
+    for (auto &&it : logger.m_Events)
     {
-        std::unique_lock<std::mutex> lock(m_Mutex);
-        m_Condition.wait(
-            lock,
-            [this] { return m_StopLoggingFlag || m_LogQueue.size() >= 100; });
-        if (m_StopLoggingFlag && m_LogQueue.empty())
-        {
-            break;
-        }
-        while (!m_LogQueue.empty())
-        {
-            m_OutStream << m_LogQueue.front() << '\n';
-            m_LogQueue.pop();
-        }
+        m_Events.push_back(std::move(it));
     }
 }
 
-const simq::Logger &simq::Logger::global ()
+simq::Logger &simq::Logger::global () noexcept
 {
-    static simq::Logger logger(std::cout);
-    return logger;
+    static Logger _logger(std::cout);
+    return _logger;
 }
