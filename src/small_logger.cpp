@@ -38,6 +38,32 @@ void simq::SmallLogger::log_seize (TimeUnit stamp, std::size_t req,
     log(stamp, msg);
 }
 
+void simq::SmallLogger::log_enqueue (TimeUnit stamp, std::size_t req,
+                                     std::size_t res) noexcept
+{
+    MessageType msg;
+#ifdef DOSPEED
+    std::snprintf(msg.data(), msg.size(), "[QUE] RES %lu REQ %lu\n", res, req);
+#else
+    std::snprintf(msg.data(), msg.size(), "%8.4e [QUE] RES %lu REQ %lu\n",
+                  stamp, res, req);
+#endif
+    log(stamp, msg);
+}
+
+void simq::SmallLogger::log_dequeue (TimeUnit stamp, std::size_t req,
+                                     std::size_t res) noexcept
+{
+    MessageType msg;
+#ifdef DOSPEED
+    std::snprintf(msg.data(), msg.size(), "[DQU] RES %lu REQ %lu\n", res, req);
+#else
+    std::snprintf(msg.data(), msg.size(), "%8.4e [DQU] RES %lu REQ %lu\n",
+                  stamp, res, req);
+#endif
+    log(stamp, msg);
+}
+
 void simq::SmallLogger::log_release (TimeUnit stamp, std::size_t res) noexcept
 {
     MessageType msg;

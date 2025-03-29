@@ -47,6 +47,8 @@ class SmallLogger
   public:
     void log(double timestamp, MessageType msg) noexcept;
     void log_seize(TimeUnit stamp, std::size_t req, std::size_t res) noexcept;
+    void log_enqueue(TimeUnit stamp, std::size_t req, std::size_t res) noexcept;
+    void log_dequeue(TimeUnit stamp, std::size_t req, std::size_t res) noexcept;
     void log_release(TimeUnit stamp, std::size_t res) noexcept;
     void log_terminate(std::size_t req, std::size_t res) noexcept;
 

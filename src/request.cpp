@@ -43,7 +43,7 @@ simq::TimeUnit simq::Request::interval_time () const noexcept
     static thread_local std::random_device _rd;
     static thread_local std::mt19937 _gen(_rd());
     std::exponential_distribution<> _distr(1 / val);
-    return m_TimeStamp + _distr(_gen);
+    return _distr(_gen);
 }
 
 simq::TimeUnit
@@ -53,7 +53,7 @@ simq::Request::processing_time (std::size_t worker) const noexcept
     static thread_local std::random_device _rd;
     static thread_local std::mt19937 _gen(_rd());
     std::exponential_distribution<> _distr(1 / val);
-    return m_TimeStamp + _distr(_gen);
+    return _distr(_gen);
 }
 
 simq::TimeUnit simq::Request::timestamp () const noexcept
