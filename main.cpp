@@ -10,7 +10,7 @@ int main (void)
     file.open("logs.txt", std::ios::out);
     {
         simq::Logger logger(file);
-        simq::ResourceManager<7, 5> manager(logger);
+        simq::ResourceManager<1, 1> manager(logger);
     }
     file.close();
     return 0;

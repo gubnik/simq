@@ -24,7 +24,7 @@ template <std::size_t... Resources> class ResourceManager
   private:
     std::size_t m_Id                       = 0;
     std::array<Resource, Size> m_Resources = {
-        {Resource(SmallLogger{m_Logger}, m_Id++, Resources)...}};
+        {Resource(m_Logger, m_Id++, Resources)...}};
 };
 
 } // namespace simq

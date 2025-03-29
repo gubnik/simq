@@ -2,6 +2,7 @@
 
 #include "logger.hpp"
 #include "request.hpp"
+#include "statistics.hpp"
 #include <deque>
 #include <queue>
 #include <thread>
@@ -10,7 +11,7 @@ namespace simq
 class Resource
 {
   public:
-    Resource(SmallLogger &&, std::size_t, std::size_t) noexcept;
+    Resource(Logger &, std::size_t, std::size_t) noexcept;
     ~Resource() noexcept;
 
   private:
@@ -31,5 +32,6 @@ class Resource
   private:
     std::thread m_HandlerThread;
     SmallLogger m_Logger;
+    Statistics m_Statistics;
 };
 } // namespace simq

@@ -2,10 +2,11 @@
 #include "constants.hpp"
 #include <utility>
 
-simq::Resource::Resource (SmallLogger &&logger, std::size_t id,
+simq::Resource::Resource (Logger &logger, std::size_t id,
                           std::size_t max_size) noexcept
     : m_Id(id), m_MaxCapacity(max_size),
-      m_HandlerThread(&Resource::request_handler, this), m_Logger(logger)
+      m_HandlerThread(&Resource::request_handler, this), m_Logger(logger),
+      m_Statistics(id)
 {
 }
 
@@ -26,6 +27,7 @@ void simq::Resource::request_handler () noexcept
         while (current_time < constants::MaxTime)
         {
             Request req(i, current_time);
+            m_Statistics.request(i);
             double timestamp = req.interval_time();
             current_time += timestamp;
             m_Generated.emplace(std::move(req));
@@ -37,6 +39,7 @@ void simq::Resource::request_handler () noexcept
         m_Generated.pop();
         release(req.timestamp());
         process(std::move(req));
+        m_Statistics.load((double)m_TimeStamps.size() / (double)m_MaxCapacity);
     }
     while (!m_Waiting.empty())
     {
@@ -56,6 +59,7 @@ void simq::Resource::release (TimeUnit timestamp) noexcept
 
 void simq::Resource::process (simq::Request &&req) noexcept
 {
+    m_Statistics.queue_length(m_Waiting.size());
     if (m_TimeStamps.size() >= m_MaxCapacity)
     {
         m_Logger.log_enqueue(req.timestamp(), req.type(), m_Id);
